@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>잊혀진 언니 - 미스터리 비주얼 노벨</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0b10;color:#e8e4dc;font-family:"Noto Serif KR","Malgun Gothic",serif}
+#game{position:relative;max-width:960px;height:100vh;max-height:640px;margin:0 auto;overflow:hidden;background:#111;top:50%;transform:translateY(-50%);border:1px solid #222}
+#bg{position:absolute;inset:0;transition:background 1.2s ease;background:#111}
+#vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.75) 100%);pointer-events:none}
+#hud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;font-size:13px;color:#cfc8b8;text-shadow:0 1px 3px #000;z-index:5}
+#place{position:absolute;top:44px;left:12px;font-size:12px;letter-spacing:.2em;color:#9a937f;z-index:5}
+#box{position:absolute;left:3%;right:3%;bottom:4%;min-height:150px;padding:20px 24px;background:rgba(10,10,16,.86);border:1px solid #3a3648;border-radius:6px;cursor:pointer;z-index:5}
+#speaker{font-size:14px;color:#c9a96e;margin-bottom:6px;min-height:18px}
+#text{font-size:17px;line-height:1.85;white-space:pre-wrap}
+#hint{position:absolute;right:16px;bottom:8px;font-size:12px;color:#777;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.2}}
+#choices{position:absolute;left:10%;right:10%;top:50%;transform:translateY(-60%);display:flex;flex-direction:column;gap:12px;z-index:8}
+.choice{padding:14px 18px;background:rgba(18,16,28,.92);border:1px solid #6a5f8a;color:#eee;font-size:16px;font-family:inherit;border-radius:4px;cursor:pointer;text-align:left;animation:in .5s ease both;transition:.2s}
+.choice:hover{background:#2a2442;border-color:#c9a96e;transform:translateX(6px)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+#title,#ending{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:rgba(5,5,10,.94);padding:30px}
+#ending{display:none}
+h1{font-size:40px;letter-spacing:.15em;margin-bottom:10px;color:#e8dcc0}
+.sub{color:#8d8776;margin-bottom:36px;line-height:1.8}
+.btn{padding:12px 34px;background:transparent;border:1px solid #c9a96e;color:#c9a96e;font-size:17px;font-family:inherit;cursor:pointer;border-radius:3px;transition:.2s}
+.btn:hover{background:#c9a96e;color:#111}
+#endTitle{font-size:30px;color:#e8dcc0;margin:8px 0 20px}
+#endText{max-width:620px;line-height:1.95;font-size:16px;color:#cfc8b8;margin-bottom:30px;white-space:pre-wrap}
+#endStat{font-size:13px;color:#8d8776;margin-bottom:24px}
+#fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .7s;z-index:15}
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="bg"></div><div id="vignette"></div>
+  <div id="hud"><span id="pieces">기억의 조각 0</span><span id="mood"></span></div>
+  <div id="place"></div>
+  <div id="choices"></div>
+  <div id="box"><div id="speaker"></div><div id="text"></div><div id="hint">▼ 클릭 / Space</div></div>
+  <div id="fade"></div>
+  <div id="title">
+    <h1>잊혀진 언니</h1>
+    <p class="sub">기억을 잃은 채 돌아온 고향 집.<br>비가 오기 전, 언니의 흔적을 찾아야 한다.</p>
+    <button class="btn" id="startBtn">게임 시작</button>
+  </div>
+  <div id="ending">
+    <div id="endLabel" class="sub" style="margin:0"></div>
+    <div id="endTitle"></div>
+    <div id="endText"></div>
+    <div id="endStat"></div>
+    <button class="btn" id="restartBtn">처음부터 다시</button>
+  </div>
+</div>
+<script>
+let S;
+const resetState=()=>({pieces:0,trust:"neutral",asked:false});
